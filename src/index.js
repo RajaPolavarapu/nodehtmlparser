@@ -66,13 +66,30 @@ app.get('/arjit', (req, res) => {
             songDescription: d.songDescription,
             musicLabel: d.label,
             songid: d.youtubeid || "Raja",
+            lyrics: d.lyrics,
             lyricsURL: d.SongName?.href
         }
     }));
 })
 
 app.get('/final', (req, res) => {
-    res.json(ytArjit);
+    const data = ytArjit.map(d => {
+        const filt = arjitProcessed.filter(d1 => d1.songid === d.songdata.songid)
+        if (filt[0]) {
+            return {
+                ...filt[0],
+                ...{
+                    yttitle: d.youtube.items[0]?.snippet?.title || "Hello World",
+                    ytdescription: d.youtube.items[0]?.snippet.description,
+                    ytchannelTitle: d.youtube.items[0]?.snippet.channelTitle,
+                    ytcategoryId: d.youtube.items[0]?.snippet.categoryId,
+                    tags: d.youtube.items[0]?.snippet.tags,
+                },
+            }
+        }
+
+    })
+    res.json(data);
 })
 
 app.get('/cheerio', (req, res) => {
